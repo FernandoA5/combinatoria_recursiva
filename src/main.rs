@@ -26,65 +26,38 @@ fn main() {
     elementos.push(lista2.clone());
     elementos.push(lista3.clone());
 
-
     println!("Lista 1: {:?}", lista1.clone());
     println!("Lista 2: {:?}", lista2.clone());
     println!("Lista 3: {:?}", lista3.clone());
 
-
-    combinatoria(2, elementos);
+    let combinaciones = combinatoria(3, elementos);
+    for combinacion in combinaciones {
+        println!("Combinacion: {:?}", combinacion);
+    }
 }
 
-fn combinatoria(n: usize, elementos: Vec<Vec<String>>) -> Vec<Vec<String>>{
+
+
+fn combinatoria(n: usize, elementos: Vec<Vec<String>>) -> Vec<Vec<String>> {
     let mut combinaciones: Vec<Vec<String>> = Vec::new();
-
-    let mut resultado: Vec<Vec<String>> = Vec::new();
-    let mut combinacion_actual: Vec<String> = Vec::new();
-
-    println!("Iniciando combinaciones de {} elementos", n);
-    combinaciones_lista_de_listas(&elementos, n, &mut combinacion_actual, 0, &mut resultado);
-
-    for combinacion in &resultado {
-        println!("{:?}", combinacion);
-        combinaciones.push(combinacion.clone());
-    }
-
+    combinatoria_recursiva(n, elementos, &mut combinaciones, Vec::new());
     combinaciones
 }
 
-fn combinaciones_lista_de_listas<T:Clone>(
-        listas: &Vec<Vec<T>>,
-        n: usize, 
-        combinacion_actual: &mut Vec<T>, 
-        index: usize,
-        resultado: &mut Vec<Vec<T>>, 
-    ){
-    //Imprimimos todas las variables que entraron:
-    println!("Index: {} | N: {}", index, n);
-
-
-    //Si la combinacion actual tiene el tamaño que queremos, la agregamos al resultado
-    if combinacion_actual.len() == n {
-        resultado.push(combinacion_actual.clone());
+fn combinatoria_recursiva(n: usize, elementos: Vec<Vec<String>>, combinaciones: &mut Vec<Vec<String>>, combinacion_actual: Vec<String>) {
+    if n == 0 {
+        combinaciones.push(combinacion_actual);
         return;
     }
 
-    //Si el index es igual al tamaño de la lista de elementos, no hay nada que hacer
-    if index == listas.len() {
-        return;
+    for i in 0..elementos.len() {
+        for j in 0..elementos[i].len() {
+            let mut nueva_combinacion = combinacion_actual.clone();
+            nueva_combinacion.push(elementos[i][j].clone());
+            let mut nuevos_elementos = elementos.clone();
+            nuevos_elementos.remove(i);
+            combinatoria_recursiva(n - 1, nuevos_elementos, combinaciones, nueva_combinacion);
+        }
     }
-
-    //Obtenemos la lista actual
-    let lista_actual = &listas[index];
-
-
-    //Iteramos sobre los elementos de la lista actual
-    for elemento in lista_actual {
-        combinacion_actual.push(elemento.clone());
-        combinaciones_lista_de_listas(listas, n, combinacion_actual, index+1, resultado);
-        combinacion_actual.pop();
-    }
-
-    //Llamamos a la funcion recursivamente con el siguiente index
-    combinaciones_lista_de_listas(listas, n, combinacion_actual, index, resultado)
 }
+
